@@ -8,11 +8,8 @@
 (define exampleVector1 '(1 2 3))
 (define exampleVector2 '(3 3 3))
 (define exampleScalar 3)
-(define exampleMatrix1 '((1 2 3))) ; [[1 2 3]] : 1 * 3
-(define exampleMatrix2 '((1) (2) (3)))
-; [[1]
-;  [2]
-;  [3]]
+
+(define (!= x y) (not (= x y)))
 
 (define (add-vectors v1 v2)
   (reverse (add-vectors-tool v1 v2 '())))
@@ -37,27 +34,47 @@
         (display v1) (display " ") (display v2) (display (- (car v1) (car v2))) (newline)
         (subtract-vectors-tool (cdr v1) (cdr v2) (cons (- (car v1) (car v2)) out)))))
 
-
-
-
+(define (scale vector scalar)
+  (reverse-list (scale-tool vector scalar '())))
 (define (scale-tool in-vector scalar out-vector)
   (if
     (null? in-vector) out-vector
       (scale-tool (cdr in-vector) scalar (cons (* scalar (car in-vector)) out-vector  ))
-  ) ; TODO: Fix this list inversion
+  )
 )
-(define (scale vector scalar)
-  (reverse-list (scale-tool vector scalar '())))
 
-;; O(n) steps
-(define (reverse-list L)
-  (reverse-list-tool L '()))
+(define exampleMatrix1 '((1 2 3))) ; [[1 2 3]] : 1 * 3
+(define exampleMatrix2 '((1) (2) (3)))
+; [[1]
+;  [2]
+;  [3]] : 3 * 1
+(define exampleMatrix3 '((1 2 3) (4 5 6) (7 8 9)))
 
 
-(define (reverse-list-tool input-list output-list)
-  (if
-    (null? input-list) output-list
-      (reverse-list-tool (cdr input-list) (cons (car input-list) output-list))))
+(define (is-valid-matrix? matrix)
+  (cond
+    ((null? matrix) #t)
+    ((not (list? (car matrix))) #f)
+    (else (is-valid-matrix-tool matrix (length (car matrix))))
+))
+
+(define (is-valid-matrix-tool matrix width)
+  (cond
+    ((null? matrix) #t)
+    ((not (list? (car matrix))) #f)
+    ((!= (length (car matrix)) width) #f)
+    (else (is-valid-matrix-tool (cdr matrix) (length (car matrix))))))
+
+(define (get-dimensions matrix)
+  (if (null? matrix) '() (list (length matrix) (length (car matrix)))))
+;; fast
+
+(define (get-dimensions-safe matrix)
+  (if (is-valid-matrix? matrix)
+    (if (null? matrix) '() (list (length matrix) (length (car matrix))))
+    (display "Invalid Matrix")
+  )
+)
 
 
 ;; Tests
@@ -70,3 +87,10 @@
 (subtract-vectors '(1 2 3) '(0 0 0)) ; '(1 2 3)
 (subtract-vectors '(0 0 0) '(1 2 3)) ; '(-1 -2 -3)
 (subtract-vectors '(8 4) '(2 7)) ; '(6 -3)
+(is-valid-matrix? '((1 2 3) (4 5 6))) ; #t
+(is-valid-matrix? '((1 2 3))) ; #t
+(is-valid-matrix? '()) ; #t
+(is-valid-matrix? '(1 2 3)) ; #f
+(is-valid-matrix? '((1 2 3) (1 2))) ; #f
+(get-dimensions '((1 2 3) (4 5 6) (7 8 9) (10 11 12))) ; '(4 3)
+(get-dimensions '()) ; '(0 0)
