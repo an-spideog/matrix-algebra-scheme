@@ -34,8 +34,8 @@
     ( (not (= (length v1) (length v2))) (display "Vectors must be the same length to add"))
     ( (and (null? v1) (null? v2)) out)
     (else
-        (display v1) (display " ") (display v2)
-        (add-vectors-tool (cdr v1) (cdr v2) (cons (- (car v1) (car v2)) out)))))
+        (display v1) (display " ") (display v2) (display (- (car v1) (car v2))) (newline)
+        (subtract-vectors-tool (cdr v1) (cdr v2) (cons (- (car v1) (car v2)) out)))))
 
 
 
