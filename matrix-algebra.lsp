@@ -76,7 +76,16 @@
   )
 )
 
+(define (same-dimensions? m1 m2) 
+  (equal? (get-dimensions-safe m1) (get-dimensions-safe m2)))
 
+(define (add-matrices m1 m2)
+  (if (same-dimensions? m1 m2) (reverse (add-matrices-tool m1 m2 '())) (display "error"))) ; This causes weird spacing, not sure why TODO
+
+(define (add-matrices-tool m1 m2 out) 
+  (cond 
+    ((null? m1) out)
+    (else (add-matrices-tool (cdr m1) (cdr m2) (cons (add-vectors (car m1) (car m2)) out))))) 
 ;; Tests
 (scale '(8 12 14) 1) ; '(8 12 14)
 (scale '(1 2 3) 10) ;  '(10 20 30)
