@@ -1,9 +1,6 @@
 ; Matrix Algebra Suite in Scheme
 
-;; I should perhaps make a type distinction between <- TODO
-;; a vector: [1 2 3] and a 1 dimensional matrix [[1 2 3]]
-;; for functions
-;; the current reversing method is more memory efficient but less steps efficient
+;; TODO: get rid of the reversing thing, it's less efficient overall
 
 (define exampleVector1 '(1 2 3))
 (define exampleVector2 '(3 3 3))
@@ -12,36 +9,23 @@
 (define (!= x y) (not (= x y)))
 
 (define (add-vectors v1 v2)
-  (reverse (add-vectors-tool v1 v2 '())))
-
-(define (add-vectors-tool v1 v2 out)
-  ;(display " v1: ") (display v1) (display " v2: ") (display v2) (display " out: ") (display out)
   (cond
-    ( (not (= (length v1) (length v2)) ) (display "Vectors must be the same length to add"))
-    ( (and (null? v1) (null? v2)) out)
+    ((not (= (length v1) (length v2))) (display "Vectors must be the same length to add"))
+    ((null? v1) '())
     (else
-        (display v1) (display " ") (display v2)
-        (add-vectors-tool (cdr v1) (cdr v2) (cons (+ (car v1) (car v2)) out)))))
+      (cons (+ (car v1) (car v2)) (add-vectors (cdr v1) (cdr v2))))))
 
 (define (subtract-vectors v1 v2)
-  (reverse (subtract-vectors-tool v1 v2 '())))
-
-(define (subtract-vectors-tool v1 v2 out)
   (cond
-    ( (not (= (length v1) (length v2))) (display "Vectors must be the same length to add"))
-    ( (and (null? v1) (null? v2)) out)
+    ((not (= (length v1) (length v2))) (display "Vectors must be the same length to subtract"))
+    ((null? v1) '())
     (else
-        (display v1) (display " ") (display v2) (display (- (car v1) (car v2))) (newline)
-        (subtract-vectors-tool (cdr v1) (cdr v2) (cons (- (car v1) (car v2)) out)))))
+      (cons (- (car v1) (car v2)) (subtract-vectors (cdr v1) (cdr v2))))))
 
-(define (scale vector scalar)
-  (reverse-list (scale-tool vector scalar '())))
-(define (scale-tool in-vector scalar out-vector)
-  (if
-    (null? in-vector) out-vector
-      (scale-tool (cdr in-vector) scalar (cons (* scalar (car in-vector)) out-vector  ))
-  )
-)
+(define (scale v x)
+  (if (null? v)
+    '()
+    (cons (* x (car v)) (scale (cdr v) x))))
 
 (define exampleMatrix1 '((1 2 3))) ; [[1 2 3]] : 1 * 3
 (define exampleMatrix2 '((1) (2) (3)))
@@ -80,12 +64,12 @@
   (equal? (get-dimensions-safe m1) (get-dimensions-safe m2)))
 
 (define (add-matrices m1 m2)
-  (if (same-dimensions? m1 m2) (reverse (add-matrices-tool m1 m2 '())) (display "error"))) ; This causes weird spacing, not sure why TODO
-
-(define (add-matrices-tool m1 m2 out) 
-  (cond 
-    ((null? m1) out)
-    (else (add-matrices-tool (cdr m1) (cdr m2) (cons (add-vectors (car m1) (car m2)) out))))) 
+  (cond
+    ((not (same-dimensions? m1 m2)) (display "Matrices must be the same dimensions to add")) ; TODO: Error detail | 
+    ;; could make this a separate if so as not to test it every time
+    ((null? m1) '())
+    (else
+      (cons (add-vectors (car m1) (car m2)) (add-matrices (cdr m1) (cdr m2))))))
 ;; Tests
 (scale '(8 12 14) 1) ; '(8 12 14)
 (scale '(1 2 3) 10) ;  '(10 20 30)
