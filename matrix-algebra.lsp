@@ -64,12 +64,23 @@
   (equal? (get-dimensions-safe m1) (get-dimensions-safe m2)))
 
 (define (add-matrices m1 m2)
-  (cond
-    ((not (same-dimensions? m1 m2)) (display "Matrices must be the same dimensions to add")) ; TODO: Error detail | 
-    ;; could make this a separate if so as not to test it every time
-    ((null? m1) '())
-    (else
-      (cons (add-vectors (car m1) (car m2)) (add-matrices (cdr m1) (cdr m2))))))
+  (define (recurse m1 m2)
+    (if (null? m1)
+      '()
+      (cons (add-vectors (car m1) (car m2)) (recurse (cdr m1) (cdr m2)))))
+  (if (same-dimensions? m1 m2)
+    (recurse m1 m2)
+    (display "Matrices must be the same dimensions to add")))
+
+(define (subtract-matrices m1 m2)
+  (define (recurse m1 m2)
+    (if (null? m1)
+      '()
+      (cons (subtract-vectors (car m1) (car m2)) (recurse (cdr m1) (cdr m2)))))
+  (if (same-dimensions? m1 m2)
+    (recurse m1 m2)
+    (display "Matrices must be the same dimensions to add")))
+
 ;; Tests
 (scale '(8 12 14) 1) ; '(8 12 14)
 (scale '(1 2 3) 10) ;  '(10 20 30)
