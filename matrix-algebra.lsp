@@ -1,7 +1,5 @@
 ; Matrix Algebra Suite in Scheme
 
-;; TODO: get rid of the reversing thing, it's less efficient overall
-
 (define exampleVector1 '(1 2 3))
 (define exampleVector2 '(3 3 3))
 (define exampleScalar 3)
@@ -80,6 +78,48 @@
   (if (same-dimensions? m1 m2)
     (recurse m1 m2)
     (display "Matrices must be the same dimensions to add")))
+
+(define (dot-product-vectors v1 v2)
+  (define (dot-product-vectors-tool v1 v2 out)
+    (if (null? v1)
+      out
+      (dot-product-vectors-tool (cdr v1) (cdr v2) (+ out (* (car v1) (car v2))))))
+  (if (equal? (length v1) (length v2))
+    (dot-product-vectors-tool v1 v2 0)
+    (display "Vectors must be the same length to find the dot product")))
+
+(define (transpose M) 
+  (cond
+    ((equal? (get-dimensions-safe M) '(1)) M)
+
+
+))
+
+(define (idk M)
+  (cond
+    ((null? M) '())
+    ((null? (cdr M)) M)
+    (else
+      (cons (list (car M)) (idk (cdr M))))))
+
+(define (transpose M)
+  (cond
+    ((null? M) '())
+    (else
+      (cons (firstOfEach M) (outer (cdrOfEach M))))))
+
+(define (firstOfEach L)
+  (cond
+    ((null? L) '())
+    (else
+      (cons (caar L) (firstOfEach (cdr L))))))
+
+(define (cdrOfEach L)
+  (cond
+    ((null? L) '())
+    ((null? (cdar L)) '())
+    (else
+      (cons (cdar L) (cdrOfEach (cdr L))))))
 
 ;; Tests
 (scale '(8 12 14) 1) ; '(8 12 14)
